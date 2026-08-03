@@ -1,3 +1,5 @@
+// app.ts
+
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -20,9 +22,33 @@ import { dashboardRoutes } from './modules/dashboard/dashboard.routes';
 import { adminRoutes } from './modules/admin/admin.routes';
 import { favoriteRoutes } from './modules/favorite/favorite.routes';
 import { watchlistRoutes } from './modules/watchlist/watchlist.routes';
+
 export const app = express();
 
-app.use(cors({ origin: env.frontendUrl, credentials: true }));
+// 1. Define allowed origins (Localhost + Production Vercel)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://movie-review-gray-three.vercel.app',
+  ...(env.frontendUrl ? [env.frontendUrl] : []),
+];
+
+// 2. Configure CORS dynamically
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like Postman, mobile apps, curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
 
