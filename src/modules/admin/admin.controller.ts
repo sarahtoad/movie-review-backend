@@ -17,7 +17,11 @@ export async function getUsers(_req: Request, res: Response, next: NextFunction)
 
 export async function removeUser(req: Request, res: Response, next: NextFunction) {
   try {
-    await deleteUserAccount(req.params.id);
+    const id = Array.isArray(req.params.id)
+  ? req.params.id[0]
+  : req.params.id;
+
+await deleteUserAccount(id);
     res.status(204).send();
   } catch (err) {
     next(err);
@@ -26,7 +30,11 @@ export async function removeUser(req: Request, res: Response, next: NextFunction
 
 export async function removeReview(req: Request, res: Response, next: NextFunction) {
   try {
-    await deleteReviewContent(req.params.id);
+    const id = Array.isArray(req.params.id)
+  ? req.params.id[0]
+  : req.params.id;
+
+    await deleteReviewContent(id);
     res.status(204).send();
   } catch (err) {
     next(err);
@@ -35,7 +43,11 @@ export async function removeReview(req: Request, res: Response, next: NextFuncti
 
 export async function removeComment(req: Request, res: Response, next: NextFunction) {
   try {
-    await deleteCommentContent(req.params.id);
+    const id = Array.isArray(req.params.id)
+  ? req.params.id[0]
+  : req.params.id;
+
+    await deleteCommentContent(id);
     res.status(204).send();
   } catch (err) {
     next(err);
@@ -44,7 +56,11 @@ export async function removeComment(req: Request, res: Response, next: NextFunct
 
 export async function patchMovie(req: Request, res: Response, next: NextFunction) {
   try {
-    res.json(await updateMovieInfo(req.params.id, req.body));
+    const id = Array.isArray(req.params.id)
+  ? req.params.id[0]
+  : req.params.id;
+
+res.json(await updateMovieInfo(id, req.body));
   } catch (err) {
     next(err);
   }

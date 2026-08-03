@@ -1,9 +1,17 @@
-import { Request, Response, NextFunction } from 'express';
-import { toggleReviewLike } from './reviewLike.service';
+import { Request, Response, NextFunction } from "express";
+import { toggleReviewLike } from "./reviewLike.service";
 
-export async function postReviewLike(req: Request, res: Response, next: NextFunction) {
+export async function postReviewLike(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    res.json(await toggleReviewLike(req.params.reviewId, req.user!.id));
+    const reviewId = Array.isArray(req.params.reviewId)
+      ? req.params.reviewId[0]
+      : req.params.reviewId;
+
+    res.json(await toggleReviewLike(reviewId, req.user!.id));
   } catch (err) {
     next(err);
   }

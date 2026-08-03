@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminRoutes = void 0;
+const express_1 = require("express");
+const auth_middleware_1 = require("../../middlewares/auth.middleware");
+const requireAdmin_middleware_1 = require("../../middlewares/requireAdmin.middleware");
+const admin_controller_1 = require("./admin.controller");
+exports.adminRoutes = (0, express_1.Router)();
+exports.adminRoutes.use(auth_middleware_1.requireAuth, requireAdmin_middleware_1.requireAdmin);
+exports.adminRoutes.get('/users', admin_controller_1.getUsers);
+exports.adminRoutes.delete('/users/:id', admin_controller_1.removeUser);
+exports.adminRoutes.delete('/reviews/:id', admin_controller_1.removeReview);
+exports.adminRoutes.delete('/comments/:id', admin_controller_1.removeComment);
+exports.adminRoutes.patch('/movies/:id', admin_controller_1.patchMovie);

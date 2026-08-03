@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.reviewInteractionRoutes = void 0;
+const express_1 = require("express");
+const auth_middleware_1 = require("../../middlewares/auth.middleware");
+const reviewLike_controller_1 = require("./reviewLike.controller");
+const reviewComment_controller_1 = require("./reviewComment.controller");
+exports.reviewInteractionRoutes = (0, express_1.Router)();
+exports.reviewInteractionRoutes.post('/:reviewId/like', auth_middleware_1.requireAuth, reviewLike_controller_1.postReviewLike);
+exports.reviewInteractionRoutes.post('/:reviewId/comments', auth_middleware_1.requireAuth, reviewComment_controller_1.postComment);
+exports.reviewInteractionRoutes.patch('/comments/:id', auth_middleware_1.requireAuth, reviewComment_controller_1.patchComment);
+exports.reviewInteractionRoutes.delete('/comments/:id', auth_middleware_1.requireAuth, reviewComment_controller_1.deleteComment);

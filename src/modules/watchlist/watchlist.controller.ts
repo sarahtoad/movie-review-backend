@@ -11,11 +11,12 @@ export async function postWatchlist(
   next: NextFunction
 ) {
   try {
+    const movieId = Array.isArray(req.params.movieId)
+      ? req.params.movieId[0]
+      : req.params.movieId;
+
     res.status(201).json(
-      await addToWatchlist(
-        req.user!.id,
-        req.params.movieId
-      )
+      await addToWatchlist(req.user!.id, movieId)
     );
   } catch (err) {
     next(err);
@@ -28,10 +29,11 @@ export async function deleteWatchlist(
   next: NextFunction
 ) {
   try {
-    await removeFromWatchlist(
-      req.user!.id,
-      req.params.movieId
-    );
+    const movieId = Array.isArray(req.params.movieId)
+      ? req.params.movieId[0]
+      : req.params.movieId;
+
+    await removeFromWatchlist(req.user!.id, movieId);
 
     res.status(204).send();
   } catch (err) {

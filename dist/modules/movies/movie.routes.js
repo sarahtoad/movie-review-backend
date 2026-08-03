@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.movieRoutes = void 0;
+const express_1 = require("express");
+const auth_middleware_1 = require("../../middlewares/auth.middleware");
+const validate_middleware_1 = require("../../middlewares/validate.middleware");
+const movie_schema_1 = require("./movie.schema");
+const movie_controller_1 = require("./movie.controller");
+exports.movieRoutes = (0, express_1.Router)();
+exports.movieRoutes.get('/', auth_middleware_1.optionalAuth, movie_controller_1.getMovies);
+exports.movieRoutes.get('/check-duplicate', movie_controller_1.checkDuplicate);
+exports.movieRoutes.get('/:id', auth_middleware_1.optionalAuth, movie_controller_1.getMovie);
+exports.movieRoutes.post('/', auth_middleware_1.requireAuth, (0, validate_middleware_1.validate)(movie_schema_1.createMovieSchema), movie_controller_1.postMovie);
+exports.movieRoutes.put('/:id', auth_middleware_1.requireAuth, movie_controller_1.putMovie);
+exports.movieRoutes.delete('/:id', auth_middleware_1.requireAuth, movie_controller_1.deleteMovieController);

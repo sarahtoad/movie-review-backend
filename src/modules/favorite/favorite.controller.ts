@@ -10,9 +10,13 @@ export async function addFavorite(
   next: NextFunction
 ) {
   try {
+    const movieId = Array.isArray(req.params.movieId)
+      ? req.params.movieId[0]
+      : req.params.movieId;
+
     const favorite = await createFavorite(
       req.user!.id,
-      req.params.movieId
+      movieId
     );
 
     res.status(201).json(favorite);
@@ -27,7 +31,11 @@ export async function removeFavorite(
   next: NextFunction
 ) {
   try {
-    await deleteFavorite(req.user!.id, req.params.movieId);
+    const movieId = Array.isArray(req.params.movieId)
+      ? req.params.movieId[0]
+      : req.params.movieId;
+
+    await deleteFavorite(req.user!.id, movieId);
 
     res.status(204).send();
   } catch (err) {

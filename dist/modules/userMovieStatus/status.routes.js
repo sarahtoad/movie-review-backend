@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.statusRoutes = void 0;
+const express_1 = require("express");
+const auth_middleware_1 = require("../../middlewares/auth.middleware");
+const favorite_controller_1 = require("./favorite.controller");
+const watchlist_controller_1 = require("./watchlist.controller");
+exports.statusRoutes = (0, express_1.Router)();
+exports.statusRoutes.post('/favorites/:movieId', auth_middleware_1.requireAuth, favorite_controller_1.postFavorite);
+exports.statusRoutes.get('/favorites', auth_middleware_1.requireAuth, favorite_controller_1.getFavorites);
+exports.statusRoutes.post('/watchlist/:movieId', auth_middleware_1.requireAuth, watchlist_controller_1.postWatchlist);
+exports.statusRoutes.get('/watchlist', auth_middleware_1.requireAuth, watchlist_controller_1.getWatchlist);
