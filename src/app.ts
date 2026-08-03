@@ -27,8 +27,6 @@ export const app = express();
 
 // 1. Define allowed origins (Localhost + Production Vercel)
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://movie-review-gray-three.vercel.app',
   'https://movie-review-wj5l.vercel.app',
   ...(env.frontendUrl ? [env.frontendUrl] : []),
 ];
