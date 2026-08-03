@@ -29,6 +29,7 @@ export const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'https://movie-review-gray-three.vercel.app',
+  'https://movie-review-wj5l.vercel.app',
   ...(env.frontendUrl ? [env.frontendUrl] : []),
 ];
 
