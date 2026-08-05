@@ -11,14 +11,23 @@ declare global {
   }
 }
 
-export function requireAuth(req: Request, _res: Response, next: NextFunction) {
+// Helper to extract token from either cookies or Authorization header
+function extractToken(req: Request): string | undefined {
   const cookieToken = req.cookies?.[env.cookieName];
-  const headerToken = req.headers.authorization?.startsWith('Bearer ')
-    ? req.headers.authorization.slice(7)
-    : undefined;
-  const token = cookieToken ?? headerToken;
 
-  if (!token) return next(ApiError.unauthorized());
+  let headerToken: string | undefined;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    headerToken = authHeader.slice(7).trim();
+  }
+
+  return cookieToken ?? headerToken;
+}
+
+export function requireAuth(req: Request, _res: Response, next: NextFunction) {
+  const token = extractToken(req);
+
+  if (!token) return next(ApiError.unauthorized('Non authentifié'));
 
   try {
     const payload = verifyToken(token);
@@ -30,13 +39,16 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
 }
 
 export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
-  const cookieToken = req.cookies?.[env.cookieName];
-  if (!cookieToken) return next();
-  try {
-    const payload = verifyToken(cookieToken);
-    req.user = { id: payload.userId, role: payload.role };
-  } catch {
-    // token invalide : on continue en mode anonyme
+  const token = extractToken(req);
+
+  if (token) {
+    try {
+      const payload = verifyToken(token);
+      req.user = { id: payload.userId, role: payload.role };
+    } catch {
+      // Token invalide : on continue tranquillement en mode anonyme
+    }
   }
+
   next();
 }

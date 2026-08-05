@@ -1,4 +1,5 @@
 "use strict";
+// app.ts
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -25,7 +26,26 @@ const admin_routes_1 = require("./modules/admin/admin.routes");
 const favorite_routes_1 = require("./modules/favorite/favorite.routes");
 const watchlist_routes_1 = require("./modules/watchlist/watchlist.routes");
 exports.app = (0, express_1.default)();
-exports.app.use((0, cors_1.default)({ origin: env_1.env.frontendUrl, credentials: true }));
+// 1. Define allowed origins (Localhost + Production Vercel)
+const allowedOrigins = [
+    'https://movie-review-wj5l.vercel.app',
+    ...(env_1.env.frontendUrl ? [env_1.env.frontendUrl] : []),
+];
+// 2. Configure CORS dynamically
+exports.app.use((0, cors_1.default)({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like Postman, mobile apps, curl)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        else {
+            return callback(new Error(`CORS blocked for origin: ${origin}`));
+        }
+    },
+    credentials: true,
+}));
 exports.app.use(express_1.default.json());
 exports.app.use((0, cookie_parser_1.default)());
 exports.app.get('/health', (_req, res) => res.json({ status: 'ok' }));

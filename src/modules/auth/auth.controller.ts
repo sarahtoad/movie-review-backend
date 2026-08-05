@@ -5,11 +5,15 @@ import { prisma } from '../../config/prismaClient';
 import { ApiError } from '../../utils/apiError';
 
 function setAuthCookie(res: Response, token: string) {
+  // Always use sameSite: 'none' and secure: true in production / cross-origin setups
+  const isProduction = env.nodeEnv === 'production' || process.env.NODE_ENV === 'production';
+
   res.cookie(env.cookieName, token, {
     httpOnly: true,
-    secure: env.nodeEnv === 'production',
-    sameSite: env.nodeEnv === 'production' ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    secure: isProduction, // MUST be true for cross-site cookies over HTTPS
+    sameSite: isProduction ? 'none' : 'lax', // MUST be 'none' when Vercel & Render differ
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 }
 
@@ -22,7 +26,8 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   try {
     const { user, token } = await registerUser(req.body);
     setAuthCookie(res, token);
-    res.status(201).json({ user: toPublicUser(user) });
+    // Return token in JSON response as fallback for localStorage / Bearer header
+    res.status(201).json({ user: toPublicUser(user), token });
   } catch (err) {
     next(err);
   }
@@ -32,14 +37,20 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { user, token } = await loginUser(req.body);
     setAuthCookie(res, token);
-    res.json({ user: toPublicUser(user) });
+    // Return token in JSON response as fallback for localStorage / Bearer header
+    res.json({ user: toPublicUser(user), token });
   } catch (err) {
     next(err);
   }
 }
 
 export async function logout(_req: Request, res: Response) {
-  res.clearCookie(env.cookieName);
+  res.clearCookie(env.cookieName, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    path: '/',
+  });
   res.status(204).send();
 }
 
