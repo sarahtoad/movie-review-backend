@@ -8,7 +8,7 @@ function setAuthCookie(res: Response, token: string) {
   // Always use sameSite: 'none' and secure: true in production / cross-origin setups
   const isProduction = env.nodeEnv === 'production' || process.env.NODE_ENV === 'production';
 
-  res.cookie(env.cookieName, token, {
+  res.cookie(env.cookieName || 'cinehub_token', token, {
     httpOnly: true,
     secure: isProduction, // MUST be true for cross-site cookies over HTTPS
     sameSite: isProduction ? 'none' : 'lax', // MUST be 'none' when Vercel & Render differ
