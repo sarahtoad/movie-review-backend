@@ -48,12 +48,18 @@ export async function createMovie(
         })),
       },
 
-      platforms:
-        input.platforms && input.platforms.length > 0
-          ? {
-              create: input.platforms,
-            }
-          : undefined,
+      // Replace lines 43-48 in movie.service.js with:
+    platforms:
+    input.platforms && input.platforms.length > 0
+    ? {
+      create: input.platforms
+        .filter((p) => p.name && p.name.trim() !== "") // Skip empty platform names
+        .map((p) => ({
+          name: p.name,
+          link: p.link || "",
+        })),
+    }
+  : undefined,
     },
 
     include: {
